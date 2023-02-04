@@ -1,6 +1,6 @@
-var tmx = require('../');
-var path = require('path');
-var assert = require('assert');
+const tmx = require('../');
+const path = require('path');
+const assert = require('assert');
 
 describe("tile encoding types", function() {
   it("csv", generateEncodingTypeTest("lemming-level3-csv.tmx"));
@@ -12,7 +12,7 @@ describe("tile encoding types", function() {
 
 describe("real world examples", function() {
   it("vapor test chamber", function(done) {
-    var target = path.join(__dirname, "vapor-test.tmx");
+    const target = path.join(__dirname, "vapor-test.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
@@ -25,7 +25,7 @@ describe("real world examples", function() {
     });
   });
   it("lemming level 1", function(done) {
-    var target = path.join(__dirname, "lemming-level1.tmx");
+    const target = path.join(__dirname, "lemming-level1.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
@@ -41,7 +41,7 @@ describe("real world examples", function() {
 
 describe("tilesets", function() {
   it("ability to parse a tileset", function(done) {
-    var target = path.join(__dirname, "tiles.tsx");
+    const target = path.join(__dirname, "tiles.tsx");
     tmx.parseFile(target, function(err, tileSet) {
       if (err) return done(err);
 
@@ -54,7 +54,7 @@ describe("tilesets", function() {
     });
   });
   it("embedded tileset", function(done) {
-    var target = path.join(__dirname, "embedded-tileset.tmx");
+    const target = path.join(__dirname, "embedded-tileset.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
       assert.strictEqual(map.tileSets.length, 1);
@@ -81,7 +81,7 @@ describe("tilesets", function() {
     });
   });
   it("multiple tilesets", function(done) {
-    var target = path.join(__dirname, "multiple-tile-sets.tmx");
+    const target = path.join(__dirname, "multiple-tile-sets.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
       assert.strictEqual(map.tileSets.length, 2);
@@ -101,7 +101,7 @@ describe("tilesets", function() {
     });
   });
   it("animated tiles", function(done) {
-    var target = path.join(__dirname, "animation.tmx");
+    const target = path.join(__dirname, "animation.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
       assert.strictEqual(map.width, 17);
@@ -112,7 +112,7 @@ describe("tilesets", function() {
     });
   });
   it("objectgroups in tiles", function(done) {
-    var target = path.join(__dirname, "collision.tmx");
+    const target = path.join(__dirname, "collision.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
       assert.strictEqual(map.tileSets[0].tiles[0].objectGroups[0].width, 24);
@@ -125,7 +125,7 @@ describe("tilesets", function() {
 
 describe("weird shapes", function() {
   it("ellipse, polygon, polyline", function(done) {
-    var target = path.join(__dirname, "weird-shapes.tmx");
+    const target = path.join(__dirname, "weird-shapes.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
@@ -156,7 +156,7 @@ describe("weird shapes", function() {
 
 describe("implicit tiles", function() {
   it("creates implicit tiles", function(done) {
-    var target = path.join(__dirname, "implicit_tiles.tmx");
+    const target = path.join(__dirname, "implicit_tiles.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
       assert.strictEqual(map.tileSets[0].tiles.length, 2);
@@ -175,22 +175,22 @@ describe("implicit tiles", function() {
 
 describe("custom property types", function() {
   it("parses strings correctly", function(done) {
-    var target = path.join(__dirname, "object-properties-csv.tmx");
+    const target = path.join(__dirname, "object-properties-csv.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
-      var object = map.layers[0].objects[0];
+      const object = map.layers[0].objects[0];
       assert.strictEqual(object.properties.color, "green");
       done();
     });
   });
 
   it("parses booleans correctly", function(done) {
-    var target = path.join(__dirname, "object-properties-csv.tmx");
+    const target = path.join(__dirname, "object-properties-csv.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
-      var object = map.layers[0].objects[0];
+      const object = map.layers[0].objects[0];
       assert.strictEqual(object.properties.growing, true);
       assert.strictEqual(object.properties.dead, false);
       done();
@@ -198,11 +198,11 @@ describe("custom property types", function() {
   });
 
   it("parses numbers correctly", function(done) {
-    var target = path.join(__dirname, "object-properties-csv.tmx");
+    const target = path.join(__dirname, "object-properties-csv.tmx");
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
 
-      var object = map.layers[0].objects[0];
+      const object = map.layers[0].objects[0];
       assert.strictEqual(object.properties.height, 2);
       assert.strictEqual(object.properties.timer, -2);
       assert.strictEqual(object.properties.pi, 3.14);
@@ -212,7 +212,7 @@ describe("custom property types", function() {
 });
 
 function generateEncodingTypeTest(filename) {
-  var target = path.join(__dirname, filename);
+  const target = path.join(__dirname, filename);
   return function(done) {
     tmx.parseFile(target, function(err, map) {
       if (err) return done(err);
