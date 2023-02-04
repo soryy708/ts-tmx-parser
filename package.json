@@ -4,7 +4,7 @@
   "description": "parse and load tiled maps",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec test/test.js"
+    "test": "jest test/test.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,6 @@
     "sax": "~1.1.2"
   },
   "devDependencies": {
-    "mocha": "~2.3.0"
+    "jest": "^29.4.1"
   }
 }
