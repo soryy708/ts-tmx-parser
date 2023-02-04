@@ -21,7 +21,7 @@ const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
 const FLIPPED_VERTICALLY_FLAG = 0x40000000;
 const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 
-var STATE_COUNT = 0;
+let STATE_COUNT = 0;
 const STATE_START = STATE_COUNT++;
 const STATE_MAP = STATE_COUNT++;
 const STATE_COLLECT_PROPS = STATE_COUNT++;
@@ -46,30 +46,30 @@ const STATE_TERRAIN = STATE_COUNT++;
 function parse(content, pathToFile, cb) {
   const pathToDir = path.dirname(pathToFile);
   const parser = sax.parser();
-  var map;
+  let map;
   let topLevelObject = null;
-  var state = STATE_START;
+  let state = STATE_START;
   const states = new Array(STATE_COUNT);
-  var waitForCloseNextState = 0;
-  var waitForCloseOpenCount = 0;
-  var propertiesObject = null;
-  var propertiesNextState = 0;
-  var animationsObject = null;
-  var animationsNextState = 0;
-  var objectGroupsObject = null;
-  var objectGroupsNextState = 0;
-  var tileIndex = 0;
-  var tileSet = null;
-  var tileSetNextState = 0;
-  var tile;
-  var layer;
-  var object;
-  var terrain;
+  let waitForCloseNextState = 0;
+  let waitForCloseOpenCount = 0;
+  let propertiesObject = null;
+  let propertiesNextState = 0;
+  let animationsObject = null;
+  let animationsNextState = 0;
+  let objectGroupsObject = null;
+  let objectGroupsNextState = 0;
+  let tileIndex = 0;
+  let tileSet = null;
+  let tileSetNextState = 0;
+  let tile;
+  let layer;
+  let object;
+  let terrain;
   const pend = new Pend();
   // this holds the numerical tile ids
   // later we use it to resolve the real tiles
   const unresolvedLayers = [];
-  var unresolvedLayer;
+  let unresolvedLayer;
   states[STATE_START] = {
     opentag: function (tag) {
       if (tag.name === 'MAP') {
@@ -648,14 +648,14 @@ function parse(content, pathToFile, cb) {
   }
 
   function resolveLayer(unresolvedLayer) {
-    for (var i = 0; i < unresolvedLayer.tiles.length; i += 1) {
+    for (let i = 0; i < unresolvedLayer.tiles.length; i += 1) {
       const globalTileId = unresolvedLayer.tiles[i];
-      for (var tileSetIndex = map.tileSets.length - 1;
+      for (let tileSetIndex = map.tileSets.length - 1;
         tileSetIndex >= 0; tileSetIndex -= 1) {
         const tileSet = map.tileSets[tileSetIndex];
         if (tileSet.firstGid <= globalTileId) {
           const tileId = globalTileId - tileSet.firstGid;
-          var tile = tileSet.tiles[tileId];
+          let tile = tileSet.tiles[tileId];
           if (!tile) {
             // implicit tile
             tile = new Tile();
@@ -678,7 +678,7 @@ function parse(content, pathToFile, cb) {
       return;
     }
     tileIndex = 0;
-    for (var i = 0; i < expectedCount; i += 4) {
+    for (let i = 0; i < expectedCount; i += 4) {
       saveTile(buf.readUInt32LE(i));
     }
   }
