@@ -1,8 +1,8 @@
-const sax = require('sax');
-const fs = require('fs');
-const path = require('path');
-const zlib = require('zlib');
-const Pend = require('pend');
+const sax = require("sax");
+const fs = require("fs");
+const path = require("path");
+const zlib = require("zlib");
+const Pend = require("pend");
 
 exports.readFile = defaultReadFile;
 exports.parseFile = parseFile;
@@ -72,7 +72,7 @@ function parse(content, pathToFile, cb) {
   let unresolvedLayer;
   states[STATE_START] = {
     opentag: function (tag) {
-      if (tag.name === 'MAP') {
+      if (tag.name === "MAP") {
         map = new Map();
         topLevelObject = map;
         map.version = tag.attributes.VERSION;
@@ -84,7 +84,7 @@ function parse(content, pathToFile, cb) {
         map.backgroundColor = tag.attributes.BACKGROUNDCOLOR;
 
         state = STATE_MAP;
-      } else if (tag.name === 'TILESET') {
+      } else if (tag.name === "TILESET") {
         collectTileSet(tag, STATE_START);
         topLevelObject = tileSet;
       } else {
@@ -97,14 +97,14 @@ function parse(content, pathToFile, cb) {
   states[STATE_MAP] = {
     opentag: function (tag) {
       switch (tag.name) {
-        case 'PROPERTIES':
+        case "PROPERTIES":
           collectProperties(map.properties);
           break;
-        case 'TILESET':
+        case "TILESET":
           collectTileSet(tag, STATE_MAP);
           map.tileSets.push(tileSet);
           break;
-        case 'LAYER':
+        case "LAYER":
           layer = new TileLayer(map);
           tileIndex = 0;
           layer.name = tag.attributes.NAME;
@@ -118,7 +118,7 @@ function parse(content, pathToFile, cb) {
           unresolvedLayers.push(unresolvedLayer);
           state = STATE_TILE_LAYER;
           break;
-        case 'OBJECTGROUP':
+        case "OBJECTGROUP":
           layer = new ObjectLayer();
           layer.name = tag.attributes.NAME;
           layer.color = tag.attributes.COLOR;
@@ -127,7 +127,7 @@ function parse(content, pathToFile, cb) {
           map.layers.push(layer);
           state = STATE_OBJECT_LAYER;
           break;
-        case 'IMAGELAYER':
+        case "IMAGELAYER":
           layer = new ImageLayer();
           layer.name = tag.attributes.NAME;
           layer.x = int(tag.attributes.X);
@@ -147,21 +147,21 @@ function parse(content, pathToFile, cb) {
   states[STATE_TILESET] = {
     opentag: function (tag) {
       switch (tag.name) {
-        case 'TILEOFFSET':
+        case "TILEOFFSET":
           tileSet.tileOffset.x = int(tag.attributes.X);
           tileSet.tileOffset.y = int(tag.attributes.Y);
           waitForClose();
           break;
-        case 'PROPERTIES':
+        case "PROPERTIES":
           collectProperties(tileSet.properties);
           break;
-        case 'IMAGE':
+        case "IMAGE":
           tileSet.image = collectImage(tag);
           break;
-        case 'TERRAINTYPES':
+        case "TERRAINTYPES":
           state = STATE_TERRAIN_TYPES;
           break;
-        case 'TILE':
+        case "TILE":
           tile = new Tile();
           tile.id = int(tag.attributes.ID);
           if (tag.attributes.TERRAIN) {
@@ -183,10 +183,10 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_COLLECT_PROPS] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTY') {
+      if (tag.name === "PROPERTY") {
         propertiesObject[tag.attributes.NAME] = parseProperty(
           tag.attributes.VALUE,
-          tag.attributes.TYPE
+          tag.attributes.TYPE,
         );
       }
       waitForClose();
@@ -198,10 +198,10 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_COLLECT_ANIMATIONS] = {
     opentag: function (tag) {
-      if (tag.name === 'FRAME') {
+      if (tag.name === "FRAME") {
         animationsObject.push({
-          'tileId': tag.attributes.TILEID,
-          'duration': tag.attributes.DURATION
+          tileId: tag.attributes.TILEID,
+          duration: tag.attributes.DURATION,
         });
       }
       waitForClose();
@@ -213,7 +213,7 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_COLLECT_OBJECT_GROUPS] = {
     opentag: function (tag) {
-      if (tag.name === 'OBJECT') {
+      if (tag.name === "OBJECT") {
         object = new TmxObject();
         object.name = tag.attributes.NAME;
         object.type = tag.attributes.TYPE;
@@ -233,7 +233,7 @@ function parse(content, pathToFile, cb) {
     closetag: function (name) {
       state = objectGroupsNextState;
     },
-    text: noop
+    text: noop,
   };
   states[STATE_WAIT_FOR_CLOSE] = {
     opentag: function (tag) {
@@ -247,28 +247,28 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_TILE] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTIES') {
+      if (tag.name === "PROPERTIES") {
         collectProperties(tile.properties);
-      } else if (tag.name === 'IMAGE') {
+      } else if (tag.name === "IMAGE") {
         tile.image = collectImage(tag);
-      } else if (tag.name === 'ANIMATION') {
+      } else if (tag.name === "ANIMATION") {
         tile.animation = collectAnimations(tile.animations);
-      } else if (tag.name === 'OBJECTGROUP') {
+      } else if (tag.name === "OBJECTGROUP") {
         tile.objectGroup = collectObjectGroups(tile.objectGroups);
       } else {
         waitForClose();
       }
     },
     closetag: function (name) {
-      state = STATE_TILESET
+      state = STATE_TILESET;
     },
     text: noop,
   };
   states[STATE_TILE_LAYER] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTIES') {
+      if (tag.name === "PROPERTIES") {
         collectProperties(layer.properties);
-      } else if (tag.name === 'DATA') {
+      } else if (tag.name === "DATA") {
         const dataEncoding = tag.attributes.ENCODING;
         const dataCompression = tag.attributes.COMPRESSION;
         switch (dataEncoding) {
@@ -276,23 +276,25 @@ function parse(content, pathToFile, cb) {
           case null:
             state = STATE_TILE_DATA_XML;
             break;
-          case 'csv':
+          case "csv":
             state = STATE_TILE_DATA_CSV;
             break;
-          case 'base64':
+          case "base64":
             switch (dataCompression) {
               case undefined:
               case null:
                 state = STATE_TILE_DATA_B64_RAW;
                 break;
-              case 'gzip':
+              case "gzip":
                 state = STATE_TILE_DATA_B64_GZIP;
                 break;
-              case 'zlib':
+              case "zlib":
                 state = STATE_TILE_DATA_B64_ZLIB;
                 break;
               default:
-                error(new Error("unsupported data compression: " + dataCompression));
+                error(
+                  new Error("unsupported data compression: " + dataCompression),
+                );
                 return;
             }
             break;
@@ -311,9 +313,9 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_OBJECT_LAYER] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTIES') {
+      if (tag.name === "PROPERTIES") {
         collectProperties(layer.properties);
-      } else if (tag.name === 'OBJECT') {
+      } else if (tag.name === "OBJECT") {
         object = new TmxObject();
         object.name = tag.attributes.NAME;
         object.type = tag.attributes.TYPE;
@@ -337,9 +339,9 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_IMAGE_LAYER] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTIES') {
+      if (tag.name === "PROPERTIES") {
         collectProperties(layer.properties);
-      } else if (tag.name === 'IMAGE') {
+      } else if (tag.name === "IMAGE") {
         layer.image = collectImage(tag);
       } else {
         waitForClose();
@@ -353,22 +355,22 @@ function parse(content, pathToFile, cb) {
   states[STATE_OBJECT] = {
     opentag: function (tag) {
       switch (tag.name) {
-        case 'PROPERTIES':
+        case "PROPERTIES":
           collectProperties(object.properties);
           break;
-        case 'ELLIPSE':
+        case "ELLIPSE":
           object.ellipse = true;
           waitForClose();
           break;
-        case 'POLYGON':
+        case "POLYGON":
           object.polygon = parsePoints(tag.attributes.POINTS);
           waitForClose();
           break;
-        case 'POLYLINE':
+        case "POLYLINE":
           object.polyline = parsePoints(tag.attributes.POINTS);
           waitForClose();
           break;
-        case 'IMAGE':
+        case "IMAGE":
           object.image = collectImage(tag);
           break;
         default:
@@ -383,22 +385,22 @@ function parse(content, pathToFile, cb) {
   states[STATE_TILE_OBJECT] = {
     opentag: function (tag) {
       switch (tag.name) {
-        case 'PROPERTIES':
+        case "PROPERTIES":
           collectProperties(object.properties);
           break;
-        case 'ELLIPSE':
+        case "ELLIPSE":
           object.ellipse = true;
           waitForClose();
           break;
-        case 'POLYGON':
+        case "POLYGON":
           object.polygon = parsePoints(tag.attributes.POINTS);
           waitForClose();
           break;
-        case 'POLYLINE':
+        case "POLYLINE":
           object.polyline = parsePoints(tag.attributes.POINTS);
           waitForClose();
           break;
-        case 'IMAGE':
+        case "IMAGE":
           object.image = collectImage(tag);
           break;
         default:
@@ -408,11 +410,11 @@ function parse(content, pathToFile, cb) {
     closetag: function (name) {
       state = STATE_COLLECT_OBJECT_GROUPS;
     },
-    text: noop
+    text: noop,
   };
   states[STATE_TILE_DATA_XML] = {
     opentag: function (tag) {
-      if (tag.name === 'TILE') {
+      if (tag.name === "TILE") {
         saveTile(int(tag.attributes.GID, 0));
       }
       waitForClose();
@@ -443,7 +445,7 @@ function parse(content, pathToFile, cb) {
       state = STATE_TILE_LAYER;
     },
     text: function (text) {
-      unpackTileBytes(new Buffer(text.trim(), 'base64'));
+      unpackTileBytes(new Buffer(text.trim(), "base64"));
     },
   };
   states[STATE_TILE_DATA_B64_GZIP] = {
@@ -454,7 +456,7 @@ function parse(content, pathToFile, cb) {
       state = STATE_TILE_LAYER;
     },
     text: function (text) {
-      const zipped = new Buffer(text.trim(), 'base64');
+      const zipped = new Buffer(text.trim(), "base64");
       const oldUnresolvedLayer = unresolvedLayer;
       const oldLayer = layer;
       pend.go(function (cb) {
@@ -479,7 +481,7 @@ function parse(content, pathToFile, cb) {
       state = STATE_TILE_LAYER;
     },
     text: function (text) {
-      const zipped = new Buffer(text.trim(), 'base64');
+      const zipped = new Buffer(text.trim(), "base64");
       const oldUnresolvedLayer = unresolvedLayer;
       const oldLayer = layer;
       pend.go(function (cb) {
@@ -498,7 +500,7 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_TERRAIN_TYPES] = {
     opentag: function (tag) {
-      if (tag.name === 'TERRAIN') {
+      if (tag.name === "TERRAIN") {
         terrain = new Terrain();
         terrain.name = tag.attributes.NAME;
         terrain.tile = int(tag.attributes.TILE);
@@ -515,7 +517,7 @@ function parse(content, pathToFile, cb) {
   };
   states[STATE_TERRAIN] = {
     opentag: function (tag) {
-      if (tag.name === 'PROPERTIES') {
+      if (tag.name === "PROPERTIES") {
         collectProperties(terrain.properties);
       } else {
         waitForClose();
@@ -560,9 +562,11 @@ function parse(content, pathToFile, cb) {
     layer.verticalFlips[tileIndex] = !!(gid & FLIPPED_VERTICALLY_FLAG);
     layer.diagonalFlips[tileIndex] = !!(gid & FLIPPED_DIAGONALLY_FLAG);
 
-    gid &= ~(FLIPPED_HORIZONTALLY_FLAG |
+    gid &= ~(
+      FLIPPED_HORIZONTALLY_FLAG |
       FLIPPED_VERTICALLY_FLAG |
-      FLIPPED_DIAGONALLY_FLAG);
+      FLIPPED_DIAGONALLY_FLAG
+    );
 
     unresolvedLayer.tiles[tileIndex] = gid;
 
@@ -650,8 +654,11 @@ function parse(content, pathToFile, cb) {
   function resolveLayer(unresolvedLayer) {
     for (let i = 0; i < unresolvedLayer.tiles.length; i += 1) {
       const globalTileId = unresolvedLayer.tiles[i];
-      for (let tileSetIndex = map.tileSets.length - 1;
-        tileSetIndex >= 0; tileSetIndex -= 1) {
+      for (
+        let tileSetIndex = map.tileSets.length - 1;
+        tileSetIndex >= 0;
+        tileSetIndex -= 1
+      ) {
         const tileSet = map.tileSets[tileSetIndex];
         if (tileSet.firstGid <= globalTileId) {
           const tileId = globalTileId - tileSet.firstGid;
@@ -673,8 +680,14 @@ function parse(content, pathToFile, cb) {
   function unpackTileBytes(buf) {
     const expectedCount = map.width * map.height * 4;
     if (buf.length !== expectedCount) {
-      error(new Error("Expected " + expectedCount +
-        " bytes of tile data; received " + buf.length));
+      error(
+        new Error(
+          "Expected " +
+            expectedCount +
+            " bytes of tile data; received " +
+            buf.length,
+        ),
+      );
       return;
     }
     tileIndex = 0;
@@ -685,7 +698,7 @@ function parse(content, pathToFile, cb) {
 }
 
 function defaultReadFile(name, cb) {
-  fs.readFile(name, { encoding: 'utf8' }, cb);
+  fs.readFile(name, { encoding: "utf8" }, cb);
 }
 
 function parseFile(name, cb) {
@@ -711,19 +724,18 @@ function parsePoints(str) {
 
 function parseProperty(value, type) {
   switch (type) {
-    case 'int':
+    case "int":
       return parseInt(value, 10);
-    case 'float':
+    case "float":
       return parseFloat(value, 2);
-    case 'bool':
-      return value === 'true';
+    case "bool":
+      return value === "true";
     default:
       return value;
   }
-
 }
 
-function noop() { }
+function noop() {}
 
 function int(value, defaultValue) {
   defaultValue = defaultValue == null ? null : defaultValue;
@@ -774,14 +786,18 @@ TileSet.prototype.mergeTo = function (other) {
   other.source = this.source == null ? other.source : this.source;
   other.name = this.name == null ? other.name : this.name;
   other.tileWidth = this.tileWidth == null ? other.tileWidth : this.tileWidth;
-  other.tileHeight = this.tileHeight == null ? other.tileHeight : this.tileHeight;
+  other.tileHeight =
+    this.tileHeight == null ? other.tileHeight : this.tileHeight;
   other.spacing = this.spacing == null ? other.spacing : this.spacing;
   other.margin = this.margin == null ? other.margin : this.margin;
-  other.tileOffset = this.tileOffset == null ? other.tileOffset : this.tileOffset;
-  other.properties = this.properties == null ? other.properties : this.properties;
+  other.tileOffset =
+    this.tileOffset == null ? other.tileOffset : this.tileOffset;
+  other.properties =
+    this.properties == null ? other.properties : this.properties;
   other.image = this.image == null ? other.image : this.image;
   other.tiles = this.tiles == null ? other.tiles : this.tiles;
-  other.terrainTypes = this.terrainTypes == null ? other.terrainTypes : this.terrainTypes;
+  other.terrainTypes =
+    this.terrainTypes == null ? other.terrainTypes : this.terrainTypes;
 };
 
 function Image() {

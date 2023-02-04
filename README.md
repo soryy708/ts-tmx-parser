@@ -6,16 +6,16 @@ in node.js or [browserify](http://browserify.org/).
 ## Usage
 
 ```js
-var tmx = require('tmx-parser');
+var tmx = require("tmx-parser");
 
 // if you have a string (pathToFile is for resolving tilesets if necessary)
-tmx.parse(xmlString, pathToFile, function(err, map) {
+tmx.parse(xmlString, pathToFile, function (err, map) {
   if (err) throw err;
   console.log(map);
 });
 
 // if you have a file
-tmx.parseFile(filename, function(err, map) {
+tmx.parseFile(filename, function (err, map) {
   if (err) throw err;
   console.log(map);
 });
@@ -38,7 +38,7 @@ A parsed map looks something like this:
   tileWidth: 16,
   tileHeight: 16,
   backgroundColor: undefined,
-  layers: 
+  layers:
    [ { map: [Object],
        type: 'tile',
        name: 'Tiles',
@@ -73,11 +73,11 @@ A parsed map looks something like this:
        visible: true,
        properties: {},
        objects: [] } ],
-  properties: 
+  properties:
    { bg_art: 'background.png',
      bg_music: 'music/silly.mp3',
      fg_art: 'hill.png' },
-  tileSets: 
+  tileSets:
    [ { firstGid: 1,
        source: 'tiles.tsx',
        name: 'default',
@@ -101,7 +101,7 @@ The `objects` array looks like this:
   opacity: 1,
   visible: true,
   properties: {},
-  objects: 
+  objects:
    [ { name: undefined,
        type: 'Decoration',
        x: 0,
